@@ -39,4 +39,5 @@ Direkt aus github, Breite und Höhe entsprechend beliebig anpassen:
 ## Lizenz
 
 Kartendaten © [OpenStreetMap](https://www.openstreetmap.org/copyright) - Mitwirkende 
+
 Gute Orte: [CC 0](https://creativecommons.org/publicdomain/zero/1.0/deed.de)
