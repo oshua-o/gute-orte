@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="referrer" content="origin">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gute Orte in Bergisch Gladbach</title>
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.fullscreen/3.0.2/Control.FullScreen.min.css" crossorigin="">
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: Krub, Arial, Helvetica, sans-serif;
+    }
+
+    #map {
+      width: 100%; /* füllt den ganzen Bildschirm */
+      /* width: 800px; /* festgelegte Höhe */
+      height: 100dvh; /* füllt den ganzen Bildschirm */
+      /* height: 600px; /* festgelegte Breite */
+    }
+
+    .legend-dot {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      vertical-align: middle;
+      margin-right: 4px;
+    }
+
+    .leaflet-control-layers {
+      background: white;
+      padding: 6px 10px;
+      border-radius: 6px;
+      box-shadow: 0 1px 5px rgba(0,0,0,0.3);
+    }
+
+    .leaflet-control-layers-overlays label {
+      display: flex !important;
+      align-items: center;
+      gap: 6px;
+      margin: 4px 0;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="map"></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.fullscreen/3.0.2/Control.FullScreen.min.js" crossorigin=""></script>
+
+  <script>
+    const map = L.map('map', { fullscreenControl: true }).setView([50.9918, 7.1389], 12);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>-Mitwirkende',
+      maxZoom: 19,
+    }).addTo(map);
+
+    /* Kategorien */
+
+    const categories = {
+      bio: {
+        label: "Bio",
+        colour: "green",
+        layer: L.layerGroup(),
+      },
+      vegan: {
+        label: "Vegan",
+        colour: "#4FCFB1",
+        layer: L.layerGroup(),
+      },
+      secondhand: {
+        label: "Secondhand",
+        colour: "#F08080",
+        layer: L.layerGroup(),
+      },
+      ausleihen: {
+        label: "Ausleihen",
+        colour: "yellow",
+        layer: L.layerGroup(),
+      },
+      jugend: {
+        label: "für Jugendliche",
+        colour: "purple",
+        layer: L.layerGroup(),
+      },
+      begegnung: {
+        label: "Begegnungsorte",
+        colour: "orange",
+        layer: L.layerGroup(),
+      },
+      hilfe: {
+        label: "Hilfe für Bedürftige",
+        colour: "gray",
+        layer: L.layerGroup(),
+      }
+    };
+
+    /* Orte */
+
+    const places = [
+      {
+        name: "Biobauernhof Scheurenhöfchen",
+        coords: [50.9738375190915, 7.246630908333511],
+        category: "bio",
+        description: 'Bio-Landwirtschaftsbetrieb<br>' +
+          'Scheurenhöfchen 1, 51429 Bergisch Gladbach<br>' +
+          '<a href="https://scheurenhöfchen.de" target="_blank" rel="noopener">scheurenhöfchen.de</a>'
+      },
+      {
+        name: "Alnatura",
+        coords: [50.99388887760864, 7.147232734203713],
+        category: "bio",
+        description: 'Bio-Supermarkt im Strundepark<br>' +
+          'Kürtener Straße 1, 51465 Bergisch Gladbach'
+      },
+      {
+        name: "Denns Biomarkt",
+        coords: [50.984220969233085, 7.120718055257108],
+        category: "bio",
+        description: 'Bio-Supermarkt<br>' +
+          'Richard-Zanders-Straße 6, 51465 Bergisch Gladbach'
+      },
+      {
+        name: "Büggel",
+        coords: [50.999692053109364, 7.099740381919315],
+        category: "bio",
+        description: 'Unverpackt-Laden in Paffrath<br>' +
+          'Nußbaumer Str. 7, 51469 Bergisch Gladbach<br>' +
+          '<a href="https://bueggel-unverpackt.de" target="_blank" rel="noopener">bueggel-unverpackt.de</a>'
+      },
+      {
+        name: "Klefhof",
+        coords: [50.98555915084455, 7.245144844661729],
+        category: "bio",
+        description: 'Bio-Bauernhof und Lernort im Bergischen Land<br>' +
+          'Klefhaus 10, 51491 Overath<br>' +
+          '<a href="https://klefhof.de" target="_blank" rel="noopener">klefhof.de</a>'
+      },
+      {
+        name: "Naturkost Refrath",
+        coords: [50.95646508745058, 7.114921821858898],
+        category: "bio",
+        description: 'Bioladen<br>' +
+          'Dolmanstraße 6 -10, 51427 Bergisch Gladbach'
+      },
+      {
+        name: "Naturwaren Böhnke",
+        coords: [50.96452544370829, 7.1030008328056145],
+        category: "bio",
+        description: 'Bioladen<br>' +
+          'Brandroster 38, 51427 Bergisch Gladbach'
+      },
+      {
+        name: "Veganland",
+        coords: [50.99118771853806, 7.128502893599267],
+        category: "vegan",
+        description: 'Veganer Schnellimbiss in der Stadtmitte, auch zum Mitnehmen oder liefern lassen<br>' +
+          'Hauptstraße 174, 51465 Bergisch Gladbach'
+      },
+      {
+        name: "Tandoor House",
+        coords: [50.96611872128222, 7.156954375432551],
+        category: "vegan",
+        description: 'Indisches Restaurant in Bensberg mit vielen veganen Optionen, auch als Lieferservice<br>' +
+          'Kölner Str. 1a, 51429 Bergisch Gladbach'
+      },
+      {
+        name: "Bücherschrank",
+        coords: [50.991724448181, 7.1310789377434505],
+        category: "secondhand",
+        description: 'Konrad-Adenauer-Platz'
+      },
+      {
+        name: "Bücherschrank",
+        coords: [50.99244329321569, 7.132871796386903],
+        category: "secondhand",
+        description: 'im Erdgeschoss der VHS'
+      },
+      {
+        name: "Bücherschrank",
+        coords: [50.99831633267691, 7.152605061335234],
+        category: "secondhand",
+        description: 'Rommerscheider Höhe Ecke Rommerscheid'
+      },
+      {
+        name: "Bücherschrank",
+        coords: [51.01494790185004, 7.082242180676871],
+        category: "secondhand",
+        description: 'Karl-Giesen-Str. (am Spielplatz)'
+      },
+      {
+        name: "Bücherschrank",
+        coords: [50.957912358344736, 7.116778078238181],
+        category: "secondhand",
+        description: 'Kirchplatz'
+      },
+      {
+        name: "Bücherschrank",
+        coords: [50.958900867406136, 7.16574206380509],
+        category: "secondhand",
+        description: 'Reginharstraße'
+      },
+      {
+        name: "Repaircafé",
+        coords: [50.991726049039315, 7.134383040510852],
+        category: "secondhand",
+        description: 'jeden 3. Sa im Monat 10-12 Uhr im Mittendrin<br>' +
+          'Hauptstraße 249, 51465 Bergisch Gladbach<br>' +
+          '<a href="https://www.bavweb.de/index.php" target="_blank" rel="noopener">bavweb.de</a>'
+      },
+      {
+        name: "ADRA-Shop",
+        coords: [50.99245204310804, 7.144594291850431],
+        category: "secondhand",
+        description: 'Second-Hand-Laden<br>' +
+          'Hauptstraße 362-364, 51465 Bergisch Gladbach<br>' +
+          '<a href="http://www.adrashop.de/" target="_blank" rel="noopener">adrashop.de</a>'
+      },
+      {
+        name: "Secondhand-Halle Emmaus",
+        coords: [50.98015417853998, 7.100911916752401],
+        category: "secondhand",
+        description: 'Gebrauchtwaren, Secondhand-Halle<br>' +
+          'Schlodderdicher Weg 48, 51469 Bergisch Gladbach<br>' +
+          '(0172) 2465918'
+      },
+      {
+        name: "Eine-Welt-Laden",
+        coords: [50.991568039530584, 7.13361156400527],
+        category: "secondhand",
+        description: 'im Forum<br>' +
+          'Hauptstraße 250, 51465 Bergisch Gladbach'
+      },
+      {
+        name: "Stadtbücherei",
+        coords: [50.99143808609452, 7.133678061088195],
+        category: "ausleihen",
+        description: 'Bücher, Hörbücher, Musik, Filme - sowohl vor Ort als auch online über onleihe und filmfriend<br>' +
+          'Arbeitsplätze, Internet, W-Lan, Videospiele, 3D-Drucker<br>' +
+          'Hauptstraße 250, 51465 Bergisch Gladbach<br>' +
+          '<a href="https://www.bergischgladbach.de/buecherei.aspx" target="_blank" rel="noopener">bergischgladbach.de/buecherei</a>'
+      },
+      {
+        name: "Stadtteilbücherei",
+        coords: [50.965585319568085, 7.160332247472362],
+        category: "ausleihen",
+        description: 'Bücher, Hörbücher, Musik, Filme - sowohl vor Ort als auch online über onleihe und filmfriend<br>' +
+          'Arbeitsplätze, Internet, W-Lan, Videospiele, 3D-Drucker<br>' +
+          'Schloßstraße 46-48, 51429 Bergisch Gladbach<br>' +
+          '<a href="https://www.bergischgladbach.de/buecherei.aspx" target="_blank" rel="noopener">bergischgladbach.de/buecherei</a>'
+      },
+      {
+        name: "Stadtteilbücherei",
+        coords: [50.997481995892855, 7.096780371048125],
+        category: "ausleihen",
+        description: 'Bücher, Hörbücher, Musik, Filme<br>' +
+          'Arbeitsplätze, Internet, W-Lan, Videospiele, 3D-Drucker<br>' +
+          'in der IGP: Borngasse 86, 51469 Bergisch Gladbach<br>' +
+          '<a href="https://www.bergischgladbach.de/buecherei.aspx" target="_blank" rel="noopener">bergischgladbach.de/buecherei</a>'
+      },
+      {
+        name: "Spieleverleih",
+        coords: [50.992333760169444, 7.132773950298646],
+        category: "ausleihen",
+        description: 'Verleih von Spielgeräten, Gesellschaftsspielen, Musikinstrumenten, Kostümen, Popcornmaschine etc.<br>' +
+          'Buchmühlenstraße 12, 51465 Bergisch Gladbach<br>' +
+          '<a href="https://mehrgenerationenhaus-gl.de/spieleverleih/" target="_blank" rel="noopener">mehrgenerationenhaus-gl.de</a>'
+      },
+      {
+        name: "Atelier KLKS",
+        coords: [50.990621657298014, 7.131819225949197],
+        category: "jugend",
+        description: 'Kulturpädagogischer Kreativraum<br>' +
+          'Maria-Zanders-Anlage 2, 51465 Bergisch Gladbach<br>' +
+          '<a href="https://atelier-klks.com" target="_blank" rel="noopener">atelier-klks.com</a>'
+      },
+      {
+        name: "Café Leichtsinn",
+        coords: [50.99237788025311, 7.12926310969041],
+        category: "jugend",
+        description: 'Inklusives Jugendzentrum<br>' +
+          'Dr.-Robert-Koch-Straße 8, 51465 Bergisch Gladbach<br>' +
+          '<a href="http://www.cafe-leichtsinn.de/" target="_blank" rel="noopener">cafe-leichtsinn.de</a>'
+      },
+      {
+        name: "Jugendzentrum Cross",
+        coords: [50.99237788025311, 7.12926310969041],
+        category: "jugend",
+        description: 'Jugendzentrum<br>' +
+          'Mülheimer Str. 211, 51469 Bergisch Gladbach<br>' +
+          '<a href="https://www.kja-lro.de/einrichtungen/jugendzentren-00001/cross-00001/cross/" target="_blank" rel="noopener">kja-lro.de</a>'
+      },
+      {
+        name: "Ufo Jugendkulturhaus",
+        coords: [50.96216767664649, 7.148411109689627],
+        category: "jugend",
+        description: 'Jugendzentrum und Kultureinrichtung<br>' +
+          'Kölner Str. 68, 51429 Bergisch Gladbach<br>' +
+          '<a href="http://www.awo-rhein-oberberg.de/jugendzentren-bergisch-gladbach-ufo" target="_blank" rel="noopener">awo-rhein-oberberg.de</a>'
+      },
+      {
+        name: "LOKI - Lokales Leben, Offenheit, Kreativität und Integration",
+        coords: [50.95891333367159, 7.165697527831383],
+        category: "jugend",
+        description: 'Quartiersprojekt im Wohnpark Bensberg<br>' +
+          'Reginharstraße 40, 51429 Bergisch Gladbach<br>' +
+          '<a href="https://www.bergischgladbach.de/loki.aspx" target="_blank" rel="noopener">bergischgladbach.de</a>'
+      },
+      {
+        name: "Kreativitätsschule",
+        coords: [50.96121538104622, 7.115155338634734],
+        category: "jugend",
+        description: 'Kunstschule und Jugendclub<br>' +
+          'An der Wolfsmaar 11, 51427 Bergisch Gladbach<br>' +
+          '<a href="http://krea-online.de/" target="_blank" rel="noopener">krea-online.de</a>'
+      },
+      {
+        name: "Kinder- und Jugendzentrum FRESCH",
+        coords: [51.01455975262172, 7.081784991994228],
+        category: "jugend",
+        description: 'Jugendzentrum<br>' +
+          'Am Schild 33, 51467 Bergisch Gladbach<br>' +
+          '<a href="http://fresch.net/kontakt/" target="_blank" rel="noopener">fresch.net</a>'
+      },
+      {
+        name: "Q1 Jugend-Kulturzentrum",
+        coords: [50.99101603865357, 7.134330725117668],
+        category: "jugend",
+        description: 'Jugendzentrum<br>' +
+          'Quirlsberg 1, 51465 Bergisch Gladbach<br>' +
+          '<a href="https://www.q1-gl.de/" target="_blank" rel="noopener">q1-gl.de</a>'
+      },
+      {
+        name: "Kunstlabor der Villa Zanders",
+        coords: [50.99090011048918, 7.130589644216462],
+        category: "jugend",
+        description: 'Jeden zweiten Samstag im Monat von 14.00–17.30 Uhr<br>' +
+          'Inklusives Workshopangebot für Jugendlichen ab 13 Jahren und junge Erwachsene, kostenlos und ohne Anmeldung<br>' +
+          'Kreatives Ausprobieren: Du kannst verschiedene Drucktechniken testen, zeichnen oder malen.<br>' +
+          'Unterstützung: Ein junges Team hilft dir bei der Ideenfindung und zeigt dir die aktuellen Ausstellungen im Museum.<br>' +
+          'Konrad-Adenauer-Platz 8, 51465 Bergisch Gladbach<br>' +
+          '<a href="https://villa-zanders.de/bildung-und-vermittlung/vermittlungsformate/kunstlabor/" target="_blank" rel="noopener">villa-zanders.de</a>'
+      },
+      {
+        name: "Refrather Treff",
+        coords: [50.95834132937392, 7.110657386196509],
+        category: "begegnung",
+        description: 'Offene Angeboten, Kurse, Einzelveranstaltungen<br>' +
+          'Nutzbar für eigene Veranstaltungen und Treffen.<br>' +
+          'regelmäßiges Reparaturcafé in Entstehung<br>' +
+          'Quirlsberg 1, 51465 Bergisch Gladbach<br>' +
+          '<a href="http://www.ov-bensberg-refrath.drk.de/" target="_blank" rel="noopener">ov-bensberg-refrath.drk.de</a>'
+      },
+      {
+        name: "Mittendrin",
+        coords: [50.99177630036689, 7.134384548241634],
+        category: "begegnung",
+        description: 'Begegnungsstätte für Senior*innen<br>' +
+          'Hauptstraße 249, 51465 Bergisch Gladbach'
+      },
+      {
+        name: "Traumlädchen",
+        coords: [50.993794975081606, 7.1247428290212405],
+        category: "begegnung",
+        description: 'Begegnungsort von Die Kette e.V.<br>' +
+          'Paffrather Str. 70, 51465 Bergisch Gladbach<br>' +
+          '<a href="http://www.die-kette.de/" target="_blank" rel="noopener">die-kette.de</a>'
+      },
+      {
+        name: "Himmel un Ääd",
+        coords: [51.0146212118791, 7.079635379359139],
+        category: "begegnung",
+        description: 'Begegnungscafé in Schildgen mit vielfältigem Programm<br>' +
+          'Altenberger-Dom-Straße 125, 51467 Bergisch Gladbach<br>' +
+          '<a href="https://www.himmel-un-aeaed.de/" target="_blank" rel="noopener">himmel-un-aeaed.de</a>'
+      },
+      {
+        name: "Schere.Stein.Papierflieger",
+        coords: [50.98345369853518, 7.10131462304685],
+        category: "begegnung",
+        description: 'Ort für Begegnung, Teilhabe und kreative Ideen in Gronau<br>' +
+          'Mülheimer Str. 60, 51469 Bergisch Gladbach<br>' +
+          '<a href="https://sspapierflieger.de/" target="_blank" rel="noopener">sspapierflieger.de</a>'
+      },
+      {
+        name: "Hermann-Löns-Forum",
+        coords: [50.98906034955569, 7.1047590753592695],
+        category: "begegnung",
+        description: 'Begegnungsstätte für Jung und Alt + Kita in Hand. Verschiedenste Angebote wie Sprachcafé, Kinoabend, Hausaufgabenbetreuung, Spieleabend, Fitness- und Kreativkurse, u.v.m.<br>' +
+          'Willy-Brandt-Straße 20, 51469 Bergisch Gladbach<br>' +
+          '<a href="https://www.hermann-loens-forum.de/" target="_blank" rel="noopener">hermann-loens-forum.de</a>'
+      },
+      {
+        name: "Mehrgenerationenhaus",
+        coords: [50.99241161243895, 7.132951843509232],
+        category: "begegnung",
+        description: 'in der VHS, verschiedene offene Treffs<br>' +
+          'Buchmühlenstraße 12, 51465 Bergisch Gladbach<br>' +
+          '<a href="https://mehrgenerationenhaus-gl.de/" target="_blank" rel="noopener">mehrgenerationenhaus-gl.de</a>'
+      },
+      {
+        name: "Die Kette",
+        coords: [50.99396756982286, 7.124682051141894],
+        category: "hilfe",
+        description: 'Unterstützung für Menschen mit einer psychischen Behinderung<br>' +
+          'Paffrather Str. 70, 51465 Bergisch Gladbach<br>' +
+          '<a href="http://www.die-kette.de/" target="_blank" rel="noopener">die-kette.de</a>'
+      },
+      {
+        name: "Die Platte e.V.",
+        coords: [50.988204796164055, 7.122629306396182],
+        category: "hilfe",
+        description: 'Hilfe für Obdachlose<br>' +
+          'Hauptstraße 82, 51465 Bergisch Gladbach<br>' +
+          '<a href="http://platte-ev.de/" target="_blank" rel="noopener">platte-ev.de</a>'
+      },
+      {
+        name: "Bergisch Gladbacher Tafel e.V.",
+        coords: [50.98910450750091, 7.122442654885477],
+        category: "hilfe",
+        description: 'Gemeinsam gegen Lebensmittelverschwendung - Helfen. Teilen. Versorgen.<br>' +
+          'Kalkstraße 43, 51465 Bergisch Gladbach<br>' +
+          '<a href="https://www.bergisch-gladbacher-tafel.de/" target="_blank" rel="noopener">bergisch-gladbacher-tafel.de</a>'
+      },
+    ];
+
+    /* Pin */
+
+    function colouredMarker(colour) {
+      const svg = `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${colour}">
+          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75
+                   7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38
+                   0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12
+                   2.5 2.5S13.38 11.5 12 11.5z"/>
+        </svg>`;
+      return L.divIcon({
+        html: svg,
+        className: '',
+        iconSize:   [30, 42],
+        iconAnchor: [15, 42],
+        popupAnchor:[0, -40],
+      });
+    }
+
+    places.forEach(p => {
+      const cat = categories[p.category];
+      L.marker(p.coords, { icon: colouredMarker(cat.colour) })
+        .bindPopup(`<strong>${p.name}</strong><br>${p.description}`)
+        .addTo(cat.layer);
+    });
+
+    const overlays = {};
+    Object.values(categories).forEach(cat => {
+      cat.layer.addTo(map);
+      const label = `<span class="legend-dot" style="background:${cat.colour};border:1px solid #aaa"></span>${cat.label}`;
+      overlays[label] = cat.layer;
+    });
+
+    L.control.layers(null, overlays, { collapsed: false }).addTo(map);
+  </script>
+</body>
+</html>
