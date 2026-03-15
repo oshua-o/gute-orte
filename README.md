@@ -1,6 +1,6 @@
 # Gute Orte in Bergisch Gladbach 
 
-→ [hier öffnen](https://oshua-o.github.io/gute-orte/index.html)
+→ [hier öffnen](https://oshua-o.github.io/gute-orte/)
 
 ## Einbetten mit iframe
 
