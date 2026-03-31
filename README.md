@@ -2,7 +2,7 @@
 
 → [hier öffnen](https://oshua-o.github.io/gute-orte/)
 
-Du möchtest Orte beitragen? Melde Dich gerne bei der Initiative KlimaGerecht Leben ([mailto:initiative@klimagerecht-leben.de]) und beschreibe die Orte, die Du hinzufügen möchtest mit Name, Beschreibung, Koordinaten und Adresse. Bitte beachte, dass nicht jeder eingereichte Ort sofort eingetragen werden kann.
+Du möchtest Orte beitragen? Melde Dich gerne bei der [Initiative KlimaGerecht Leben](mailto:initiative@klimagerecht-leben.de) und beschreibe die Orte, die Du hinzufügen möchtest mit Name, Beschreibung, Koordinaten und Adresse. Bitte beachte, dass nicht jeder eingereichte Ort sofort eingetragen werden kann.
 
 ## Einbetten mit iframe
 
