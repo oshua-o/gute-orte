@@ -1,4 +1,4 @@
-# Gute Orte in Bergisch Gladbach 
+# Gute Orte in Bergisch Gladbach und Umgebung
 
 → [hier öffnen](https://oshua-o.github.io/gute-orte/)
 
