@@ -45,7 +45,7 @@ Hier gilt für die Spalten:
 2) Breitengrad
 3) Längengrad
 4) Kategorie
-5) - 9) Beschreibung (einzelne Zeilen)
+5) bis 9) Beschreibung (einzelne Zeilen)
 
 Die Spalten werden durch Kommata voneinander getrennt. 
 
