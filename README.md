@@ -1,8 +1,6 @@
-# Gute Orte in Bergisch Gladbach und Umgebung
+# Gute Orte in Bergisch Gladbach 
 
-→ [hier öffnen](https://oshua-o.github.io/gute-orte/)
-
-Du möchtest Orte beitragen? Melde Dich gerne bei der [Initiative KlimaGerecht Leben](mailto:initiative@klimagerecht-leben.de) und beschreibe die Orte, die Du hinzufügen möchtest mit Name, Beschreibung, Koordinaten und Adresse. Bitte beachte, dass nicht jeder eingereichte Ort sofort eingetragen werden kann.
+→ [hier öffnen](https://oshua-o.github.io/gute-orte/index.html)
 
 ## Einbetten mit iframe
 
@@ -38,8 +36,22 @@ Direkt aus github, Breite und Höhe entsprechend beliebig anpassen:
 <!-- hier den gesamten <script>-Block einfügen inkl. Design, Kategorien, Orte -->
 ```
 
+## Bearbeiten
+
+Die Orte können in der Datei orte.csv eingetragen werden. 
+
+Hier gilt für die Spalten:
+1) Name
+2) Breitengrad
+3) Längengrad
+4) Kategorie
+5) - 9) Beschreibung (einzelne Zeilen)
+
+Die Spalten werden durch Kommata voneinander getrennt. 
+
+Sobald ein Eintrag selbst ein Komma enthält, muss der Eintrag in "" gesetzt werden (z.B. "LOKI - Lokales Leben, Offenheit, Kreativität und Integration"), damit die Tabelle nicht "Offenheit" als Spalte 2 interpretiert.
+
 ## Lizenz
 
 Kartendaten © [OpenStreetMap](https://www.openstreetmap.org/copyright) - Mitwirkende 
-
 Gute Orte: [CC 0](https://creativecommons.org/publicdomain/zero/1.0/deed.de)
