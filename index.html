@@ -218,22 +218,6 @@
         popupAnchor:[0, -40],
       });
     }
-
-    places.forEach(p => {
-      const cat = categories[p.category];
-      L.marker(p.coords, { icon: colouredMarker(cat.colour) })
-        .bindPopup(`<strong>${p.name}</strong><br>${p.description}`)
-        .addTo(cat.layer);
-    });
-
-    const overlays = {};
-    Object.values(categories).forEach(cat => {
-      cat.layer.addTo(map);
-      const label = `<span class="legend-dot" style="background:${cat.colour};border:1px solid #aaa"></span>${cat.label}`;
-      overlays[label] = cat.layer;
-    });
-
-    L.control.layers(null, overlays, { collapsed: false }).addTo(map);
   </script>
 </body>
 </html>
