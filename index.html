@@ -12,15 +12,17 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    body {
-      font-family: Krub, Arial, Helvetica, sans-serif;
+    html, body {
+      margin: 0;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
     }
 
     #map {
-      width: 100%; /* füllt den ganzen Bildschirm */
-      /* width: 800px; /* festgelegte Höhe */
-      height: 100dvh; /* füllt den ganzen Bildschirm */
-      /* height: 600px; /* festgelegte Breite */
+      width: 100%;
+      flex: 1;          /* füllt alles außer dem Link-Feld */
+      min-height: 0;
     }
 
     .legend-dot {
@@ -54,8 +56,6 @@
       padding: 0.6rem 1rem;
       font-size: 0.85rem;
       text-decoration: underline;
-      opacity: 1;
-      position: bottom;
     }
 
     .gute-orte-link:hover {
@@ -72,9 +72,9 @@
 </head>
 <body>
 
-  <a href="gute-orte-liste.html" class="gute-orte-link">Hier gehts zur Liste der Guten Orte!</a>
-
   <div id="map"></div>
+
+  <a href="gute-orte-liste.html" class="gute-orte-link">Hier gehts zur Liste der Guten Orte!</a>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.fullscreen/3.0.2/Control.FullScreen.min.js" crossorigin=""></script>
