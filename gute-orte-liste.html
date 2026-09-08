@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Oshua O - Liste: Gute Orte</title>
+
+  <link rel="stylesheet" href="/main.css">
+
+  <style>
+    html,
+    body {
+      height: 100%;               /* für den Sticky‑Footer */
+      margin: 0;
+    }
+
+    /* Flex‑Container: Header → Content → Footer */
+    body {
+      display: flex;
+      flex-direction: column;
+    }
+
+    html {
+        font-family: 'Krub', Arial, Helvetica, sans-serif;
+    }
+
+    #content {
+      position: static;
+      margin: 0 auto;               /* zentriert innerhalb des Flex‑Containers */
+      max-width: 520px;             /* Breite wie zuvor */
+      padding: 2rem 1rem;           /* Innenabstand, damit es nicht an den Rändern klebt */
+      text-align: left;
+      line-height: 1.35;
+      flex: 1 0 auto;               /* nimmt den verfügbaren Platz ein → Footer nach unten schieben */
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    a {
+      text-decoration: none;
+      color: #240d58;
+    }
+
+    a:hover {
+      color: #240d58;
+    }
+
+    @media (max-width: 480px) {
+      nav.main-nav ul.menu {
+        flex-wrap: wrap;          /* Zeilenumbruch bei wenig Platz */
+        justify-content: center;
+      }
+
+      nav.main-nav ul.menu li a {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.9rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .termin-box {
+        padding: 0.8rem 1rem;
+        gap: 0.7rem;
+      }
+
+      .termin-datum {
+        flex: 0 0 75px;      /* etwas schmalere feste Breite auf dem Smartphone */
+        width: 75px;
+        font-size: 1rem;
+        padding-right: 0.7rem;
+      }
+
+      .termin-info {
+        font-size: 0.9rem;
+      }
+    }
+
+    .subtitle {
+      color: #444;
+      line-height: 1.55;
+    }
+
+    .legend-dot {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      vertical-align: middle;
+      margin-right: 4px;
+    }
+
+    .kategorie h2 {
+      margin: 1.6rem 0 0.5rem;
+    }
+
+    .kategorie ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .kategorie li {
+      margin-bottom: 0.8rem;
+      line-height: 1.5;
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+
+    .kategorie li strong {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <!--  CONTENT  -->
+  <section id="content">
+    <h1>Liste: Gute Orte in Bergisch Gladbach</h1>
+
+    <p class="subtitle">
+    <a href="index.html">Hier</a> gehts zur Karte der Guten Orte!
+    </p>
+
+    <div id="liste"></div>
+  </section>
+
+  <script>
+    /* Kategorien – gleiche Reihenfolge und Farben wie auf der Kartenseite */
+
+    const categories = {
+      bio: { label: "Bio", colour: "green" },
+      vegan: { label: "Vegan", colour: "#4FCFB1" },
+      secondhand: { label: "Secondhand", colour: "#F08080" },
+      ausleihen: { label: "Ausleihen", colour: "yellow" },
+      jugend: { label: "für Jugendliche", colour: "purple" },
+      begegnung: { label: "Begegnungsorte", colour: "orange" },
+      hilfe: { label: "Hilfe für Bedürftige", colour: "gray" }
+    };
+
+    let places = [];
+
+    fetch('orte.csv')
+      .then(response => response.text())
+      .then(csvText => {
+        const rows = parseCSV(csvText);
+        rows.shift(); // Kopfzeile entfernen
+
+        places = rows
+          .filter(row => row.length > 0 && row[0] && row[0].trim() !== '')
+          .map(row => {
+            const [name, lat, lon, category, ...descLines] = row;
+            const description = descLines
+              .filter(line => line && line.trim() !== '')
+              .join('<br>');
+
+            return { name, category, description };
+          });
+
+        renderList();
+      })
+      .catch(err => console.error('Fehler beim Laden der orte.csv:', err));
+
+    /* Einfacher CSV-Parser, der Kommas und Anführungszeichen innerhalb von Feldern
+       sowie doppelte Anführungszeichen ("") als Escape korrekt behandelt */
+    function parseCSV(text) {
+      const rows = [];
+      let row = [];
+      let field = '';
+      let inQuotes = false;
+
+      for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+        const next = text[i + 1];
+
+        if (inQuotes) {
+          if (char === '"' && next === '"') {
+            field += '"';
+            i++;
+          } else if (char === '"') {
+            inQuotes = false;
+          } else {
+            field += char;
+          }
+        } else {
+          if (char === '"') {
+            inQuotes = true;
+          } else if (char === ',') {
+            row.push(field);
+            field = '';
+          } else if (char === '\n' || char === '\r') {
+            if (field !== '' || row.length > 0) {
+              row.push(field);
+              rows.push(row);
+              row = [];
+              field = '';
+            }
+            if (char === '\r' && next === '\n') i++;
+          } else {
+            field += char;
+          }
+        }
+      }
+      if (field !== '' || row.length > 0) {
+        row.push(field);
+        rows.push(row);
+      }
+      return rows;
+    }
+
+    function renderList() {
+      const container = document.getElementById('liste');
+
+      Object.keys(categories).forEach(key => {
+        const cat = categories[key];
+        const orte = places.filter(p => p.category === key);
+        if (orte.length === 0) return;
+
+        const section = document.createElement('div');
+        section.className = 'kategorie';
+
+        const heading = document.createElement('h2');
+        heading.innerHTML = `<span class="legend-dot" style="background:${cat.colour};border:1px solid #aaa"></span>${cat.label}`;
+        section.appendChild(heading);
+
+        const ul = document.createElement('ul');
+        orte.forEach(p => {
+          const li = document.createElement('li');
+          li.innerHTML = `<strong>${p.name}</strong>${p.description}`;
+          ul.appendChild(li);
+        });
+        section.appendChild(ul);
+
+        container.appendChild(section);
+      });
+    }
+  </script>
+</body>
+</html>
